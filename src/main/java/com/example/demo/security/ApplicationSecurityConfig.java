@@ -33,7 +33,9 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/", "index").permitAll()
-                .antMatchers("/myaccount/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+//                todo: доделать antMatchers для getGrantedAuthorities
+//                .antMatchers("/myaccount/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+                .antMatchers(HttpMethod.GET, "/myaccount/**").hasAnyAuthority(ADMIN.getGrantedAuthorities(), MANAGER.getGrantedAuthorities())
                 .antMatchers(HttpMethod.POST, "/cars-catalog/**").hasAuthority(ADMIN_REPORT_CLIENT.name())
                 .anyRequest()
                 .authenticated()
@@ -49,19 +51,21 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .username("Billy Herrington")
                 .password(passwordEncoder.encode("NUMBERONE"))
                 .roles(ADMIN.name())
-                .authorities(ADMIN_REPORT_CLIENT.name())
+//                .authorities(ADMIN.getGrantedAuthorities())
                 .build();
 //      Added a new client
         UserDetails clientBuilder = User.builder()
                 .username("Edward Elric")
                 .password(passwordEncoder.encode("12345"))
                 .roles(CLIENT.name())
+//                .authorities(CLIENT.getGrantedAuthorities())
                 .build();
 //        Added manager
         UserDetails managerBuilder = User.builder()
                 .username("Anilop")
                 .password(passwordEncoder.encode("password"))
                 .roles(MANAGER.name())
+//                .authorities(MANAGER.getGrantedAuthorities())
                 .build();
         return new  InMemoryUserDetailsManager(billyHerringtonBuilder, clientBuilder, managerBuilder);
     }
